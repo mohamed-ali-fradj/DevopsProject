@@ -43,6 +43,35 @@ pipeline {
                  sh 'mvn deploy -Dmaven.test.skip=true'
                         }
                  }
+            stage('Docker Build images') {
+                            steps {
+                                script {
+                                    sh 'docker build -t medalifradj/medalifradj-5twin3-devops:1.0.0 .'
+                                    sh 'docker pull mysql:5.7'
+
+
+                                }
+                            }
+                        }
+                        stage('Push image Dockerhub') {
+                            steps {
+                                script {
+                                    withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerpwd')]) {
+                                        sh 'docker login -u medalifradj -p ${dockerpwd}'
+                                        sh 'docker push medalifradj/medalifradj-5twin3-devops:1.0.0'
+
+
+                                    }
+                                }
+                            }
+                        }
+                        stage('Docker Compose') {
+                            steps {
+                                script {
+                                    sh 'docker compose up -d '
+                                }
+                            }
+                        }
 
         }
 }
