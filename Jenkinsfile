@@ -31,6 +31,18 @@ pipeline {
                      sh 'mvn sonar:sonar -Dsonar.login=admin -Dsonar.password=sonar -Dmaven.test.skip=true';
                  }
             }
+            stage('JUnit / Mockito') {
+                 steps {
+                       sh 'mvn test'
+                       junit '**/target/surefire-reports/TEST-*.xml'
+                        }
+                 }
+
+            stage('Nexus deploy') {
+                 steps {
+                 sh 'mvn deploy -Dmaven.test.skip=true'
+                        }
+                 }
 
         }
 }
